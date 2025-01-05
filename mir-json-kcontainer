@@ -1,0 +1,58 @@
+from flask import Flask, request, jsonify
+import json
+import os
+from datetime import datetime
+
+app = Flask(__name__)
+
+# Path to save the JSON file
+FILE_PATH = "../kcontainer.json"
+
+@app.route('/kcontainer', methods=['POST'])
+def update_data():
+    if request.is_json:
+        # Parse the incoming JSON data
+        data = request.get_json()
+
+        # Add timestamp to the data
+        data['timestamp'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        # Access specific data (for example: temperature, humidity, relay status)
+        temperature = data.get('temperature')
+        humidity = data.get('humidity')
+        relay_status = data.get('relay_status', [])
+
+        # Log the received data
+        print(f"Received data: Temperature: {temperature}, Humidity: {humidity}, Relay Status: {relay_status}")
+
+        # Save the data to a JSON file
+        try:
+            # If file doesn't exist, create it; otherwise, append the new data
+            if not os.path.exists(FILE_PATH):
+                with open(FILE_PATH, 'w') as f:
+                    json.dump([data], f, indent=4)
+            else:
+                with open(FILE_PATH, 'r+') as f:
+                    file_data = json.load(f)
+                    file_data.append(data)
+                    f.seek(0)
+                    json.dump(file_data, f, indent=4)
+        except Exception as e:
+            print(f"Error saving data to file: {e}")
+
+        # Optionally, send a response back to the client
+        response = {
+            "status": "success",
+            "message": "Data received and saved successfully"
+        }
+        return jsonify(response), 200
+    else:
+        # If the request does not contain JSON data
+        response = {
+            "status": "error",
+            "message": "Invalid data format. Expected JSON."
+        }
+        return jsonify(response), 400
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5001, debug=True)

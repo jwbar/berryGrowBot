@@ -1,0 +1,12 @@
+[Unit]
+Description=Gunicorn instance to serve growhub
+After=network.target
+
+[Service]
+User=jay
+Group=www-data
+WorkingDirectory=/home/jay/growhub
+ExecStart=/home/jay/.local/bin/gunicorn --chdir /home/jay/growhub --workers 4 --bind 0.0.0.0:5000 mir:app
+
+[Install]
+WantedBy=multi-user.target

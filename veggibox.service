@@ -1,0 +1,12 @@
+[Unit]
+Description=Gunicorn instance to serve the kcontainer json pings
+After=network.target
+
+[Service]
+User=jay
+Group=www-data
+WorkingDirectory=/home/jay/kcontainer
+ExecStart=/home/jay/.local/bin/gunicorn  --chdir /home/jay/kcontainer/ --workers 4 --bind 0.0.0.0:5002 mir-json-vegbox:app
+
+[Install]
+WantedBy=multi-user.target

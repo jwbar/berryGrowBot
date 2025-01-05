@@ -1,0 +1,11 @@
+[Unit]
+Description=NoIP Dynamic Update Client
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/noip-duc -g all.ddnskey.com --username rgwf4vg --password b4PXFHBrEwpi
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
